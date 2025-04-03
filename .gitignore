@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+!.env.*.example
 
 # Databases
 *.db
@@ -38,6 +39,7 @@ package-lock.json # 通常建议提交 lock 文件，但如果团队策略不同
 out/
 
 # Backend specific
+backend/data/*.db
 backend/barcode_scanner.db
 backend/supervisor.sock
 backend/supervisord.pid
