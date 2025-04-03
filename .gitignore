@@ -1,0 +1,53 @@
+# Environments
+.env
+.env.*
+!.env.example
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+logs/
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+venv/
+env/
+.venv/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json # 通常建议提交 lock 文件，但如果团队策略不同则忽略
+# yarn.lock # 同上
+
+# Next.js
+.next/
+out/
+
+# Backend specific
+backend/barcode_scanner.db
+backend/supervisor.sock
+backend/supervisord.pid
+backend/data/barcode_scanner.db # 明确指定，虽然 *.db 已包含
+
+# Frontend specific
+frontend/logs/
+
+# IDE/Editor specific
+.vscode/
+.idea/
+*.swp
+*.swo
