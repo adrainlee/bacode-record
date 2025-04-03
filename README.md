@@ -61,7 +61,7 @@
    npm install
    ```
 
-## 运行说明
+## 开发环境运行说明
 
 ### 启动后端
 1. 进入后端目录：
@@ -85,12 +85,44 @@
    ```bash
    npm run dev
    ```
-   或生产模式构建和启动：
-   ```bash
-   npm run build
-   npm start
-   ```
    前端页面将在 http://localhost:3000 上运行
+
+## 生产环境部署说明
+
+### 后端部署
+1. 配置环境变量：
+   ```bash
+   cd backend
+   cp .env.prod.example .env.prod
+   # 编辑 .env.prod 配置生产环境参数
+   ```
+
+2. 启动服务：
+   ```bash
+   ./start_prod.sh
+   ```
+   这将使用supervisor管理FastAPI应用，提供自动重启和日志管理功能。
+
+### 前端部署
+1. 安装PM2（如果尚未安装）：
+   ```bash
+   npm install -g pm2
+   ```
+
+2. 构建和启动：
+   ```bash
+   cd frontend
+   npm run build
+   pm2 start ecosystem.config.js
+   ```
+
+3. 常用PM2命令：
+   ```bash
+   pm2 list            # 查看应用状态
+   pm2 logs           # 查看日志
+   pm2 restart all    # 重启所有应用
+   pm2 stop all      # 停止所有应用
+   ```
 
 ## API文档
 
