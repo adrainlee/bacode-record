@@ -17,8 +17,9 @@ max_requests_jitter = 50
 timeout = 120
 
 # 日志配置
-accesslog = "./logs/access.log"
-errorlog = "./logs/error.log"
+# 将日志输出到标准输出/错误，方便Docker收集
+accesslog = "-"
+errorlog = "-"
 loglevel = "info"
 
 # 进程名称

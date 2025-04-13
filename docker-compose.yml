@@ -1,0 +1,26 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: backend
+    ports:
+      - "8000:8000"
+    environment:
+      - ENV=production
+    volumes:
+      # 将宿主机的 ./backend/data 目录挂载到容器的 /app/data
+      # 这样 SQLite 数据库文件就能持久化保存
+      - ./backend/data:/app/data
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    depends_on:
+      - backend

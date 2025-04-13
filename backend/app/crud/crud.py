@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timedelta
-from typing import Optional, List, Tuple
+from typing import Optional, List, Tuple, Union
 
 from ..models.models import Scan
 from ..schemas.schemas import ScanCreate, ScanQuery, ScanExportQuery
@@ -39,7 +39,7 @@ def get_scan(db: Session, scan_id: int) -> Optional[Scan]:
     """获取单个扫描记录"""
     return db.query(Scan).filter(Scan.id == scan_id).first()
 
-def get_scan_filters(query: ScanQuery | ScanExportQuery) -> list:
+def get_scan_filters(query: Union[ScanQuery, ScanExportQuery]) -> list:
     """生成查询过滤条件"""
     filters = []
     

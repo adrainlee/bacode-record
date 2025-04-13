@@ -13,6 +13,9 @@ import {
  * @param options - 请求选项
  * @returns - 请求响应
  */
+// 从环境变量中获取API基础URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'; // 默认值
+
 export async function fetchAPI<T>(url: string, options: RequestInit = {}): Promise<T> {
     const defaultOptions: RequestInit = {
         headers: {
@@ -29,7 +32,10 @@ export async function fetchAPI<T>(url: string, options: RequestInit = {}): Promi
         } as HeadersInit,
     };
 
-    const response = await fetch(url, mergedOptions);
+    // 构建完整的API URL
+    const fullUrl = `${API_BASE_URL}${url}`;
+
+    const response = await fetch(fullUrl, mergedOptions);
 
     // 如果响应不成功，抛出错误
     if (!response.ok) {

@@ -14,8 +14,7 @@ class Scan(ScanBase):
     scanned_at: datetime
 
     class Config:
-        orm_mode = True
-        from_attributes = True
+        from_attributes = True # Pydantic V2 使用 from_attributes 替代 orm_mode
 
 class ScanCreateResponse(BaseModel):
     scan: Scan
