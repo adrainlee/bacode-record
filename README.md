@@ -124,6 +124,71 @@
    pm2 stop all      # 停止所有应用
    ```
 
+## 使用 Docker 部署 (推荐)
+
+本项目推荐使用 Docker 和 Docker Compose 进行部署，可以简化环境配置和依赖管理。
+
+### 前提条件
+- 已安装 [Docker](https://docs.docker.com/get-docker/)
+- 已安装 [Docker Compose](https://docs.docker.com/compose/install/) (通常随 Docker Desktop 一起安装)
+
+### 部署步骤
+1. **克隆仓库** (如果尚未克隆):
+   ```bash
+   git clone <your-repository-url>
+   cd bacode-record  # 进入项目根目录
+   ```
+
+2. **构建并启动容器**:
+   在项目根目录下（包含 `docker-compose.yml` 文件），运行以下命令：
+   ```bash
+   docker-compose up --build -d
+   ```
+   - `--build` 选项会强制重新构建镜像，确保使用最新的代码。
+   - `-d` 选项会在后台（分离模式）运行容器。
+   - 此命令会自动构建前端和后端的 Docker 镜像，并启动相应的服务容器。
+
+3. **访问应用**:
+   - **前端应用**: 打开浏览器访问 `http://localhost:3000`
+   - **后端API文档 (Swagger UI)**: 访问 `http://localhost:8000/docs`
+   - **后端API文档 (ReDoc)**: 访问 `http://localhost:8000/redoc`
+
+### 常用 Docker Compose 命令
+
+- **查看容器状态**:
+  ```bash
+  docker-compose ps
+  ```
+
+- **查看日志**:
+  ```bash
+  docker-compose logs         # 查看所有服务的日志
+  docker-compose logs backend   # 只查看后端服务的日志
+  docker-compose logs frontend  # 只查看前端服务的日志
+  docker-compose logs -f backend # 实时跟踪后端日志
+  ```
+
+- **停止并移除容器**:
+  ```bash
+  docker-compose down
+  ```
+  这会停止并删除由 `docker-compose up` 创建的容器、网络和卷（除非卷被声明为外部卷）。
+
+- **仅停止容器 (不移除)**:
+  ```bash
+  docker-compose stop
+  ```
+
+- **仅启动已停止的容器**:
+  ```bash
+  docker-compose start
+  ```
+
+- **重新构建镜像**:
+  ```bash
+  docker-compose build
+  ```
+
 ## API文档
 
 启动后端服务后，可以通过以下地址访问API文档：
