@@ -28,12 +28,10 @@ WORKDIR /app
 # 复制应用代码
 COPY backend/ /app/
 
-# 创建非root用户
-RUN adduser -D appuser && \
-    mkdir -p /app/data /app/logs && \
-    chown -R appuser:appuser /app
-
-USER appuser
+# 创建数据和日志目录，并设置宽松权限以确保容器可以访问挂载的卷
+RUN mkdir -p /app/data /app/logs && \
+    chmod -R 777 /app/data && \
+    chmod -R 777 /app/logs
 
 EXPOSE 8000
 

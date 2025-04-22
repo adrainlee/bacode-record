@@ -5,8 +5,8 @@ WORKDIR /app
 # 复制 package.json 和 package-lock.json
 COPY frontend/package*.json ./
 
-# 安装依赖
-RUN npm ci
+# 安装依赖 (使用npm install替代npm ci以提高在网络不稳定情况下的成功率)
+RUN npm install
 
 # 复制源代码
 COPY frontend/ ./
@@ -30,8 +30,8 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/package-lock.json ./package-lock.json
 
-# 只安装生产依赖
-RUN npm ci --omit=dev && \
+# 只安装生产依赖 (使用npm install替代npm ci以提高在网络不稳定情况下的成功率)
+RUN npm install --omit=dev && \
     npm cache clean --force
 
 EXPOSE 3000
