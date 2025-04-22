@@ -33,12 +33,8 @@ RUN mkdir -p /app/data /app/logs && \
     chmod -R 777 /app/data && \
     chmod -R 777 /app/logs
 
-# 添加启动脚本，确保数据目录权限正确
-COPY backend/entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
-
-# 使用启动脚本作为入口点
-ENTRYPOINT ["/app/entrypoint.sh"]
+# 默认命令（可以被docker-compose.yml中的command覆盖）
+CMD ["gunicorn", "-c", "gunicorn_conf.py", "app.main:app"]
 
 EXPOSE 8000
 

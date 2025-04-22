@@ -19,6 +19,19 @@ services:
       - ./backend/logs:/app/logs
     # 确保容器在重启时也能正确运行
     restart: unless-stopped
+    # 直接使用command设置权限并启动应用，不依赖entrypoint.sh
+    command: >
+      sh -c "
+        echo 'Setting correct permissions for data directory...' &&
+        chmod -R 777 /app/data &&
+        chmod -R 777 /app/logs &&
+        if [ -f /app/data/barcode_scanner.db ]; then
+          echo 'Setting permissions for database file...' &&
+          chmod 777 /app/data/barcode_scanner.db;
+        fi &&
+        echo 'Starting application...' &&
+        gunicorn -c gunicorn_conf.py app.main:app
+      "
 
   frontend:
     build:
