@@ -6,15 +6,20 @@ WORKDIR /app
 COPY frontend/package*.json ./
 
 # 安装依赖 (使用npm install替代npm ci以提高在网络不稳定情况下的成功率)
-RUN npm install
+# 添加重试机制和超时设置
+RUN npm config set fetch-retry-mintimeout 20000 && \
+    npm config set fetch-retry-maxtimeout 120000 && \
+    npm install && \
+    npm cache clean --force
 
 # 复制源代码
 COPY frontend/ ./
 
-# 设置环境变量并构建
-# 在Docker网络中，服务可以通过服务名称相互访问
+# 设置环境变量并构建 - 使用standalone输出模式
 ENV NEXT_PUBLIC_API_URL=http://backend:8000
-RUN npm run build
+RUN cp next.config.js next.config.original.js && \
+    echo "const originalConfig = require('./next.config.original.js'); module.exports = { ...originalConfig, output: 'standalone' };" > next.config.js && \
+    npm run build
 
 # 生产阶段
 FROM node:18-alpine AS runner
@@ -22,17 +27,21 @@ WORKDIR /app
 
 # 设置环境变量
 ENV NODE_ENV production
+ENV NEXT_PUBLIC_API_URL=http://backend:8000
 
-# 复制必要文件
-COPY --from=builder /app/next.config.js ./
+# 只复制必要的文件 - 使用standalone输出的优势
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/package-lock.json ./package-lock.json
+# 确保rewrites配置正常工作
+COPY --from=builder /app/next.config.js ./next.config.js
 
-# 只安装生产依赖 (使用npm install替代npm ci以提高在网络不稳定情况下的成功率)
-RUN npm install --omit=dev && \
-    npm cache clean --force
+# 删除不必要的文件和目录
+RUN find . -name "*.map" -delete && \
+    rm -rf /tmp/* && \
+    rm -rf /root/.npm && \
+    rm -rf /root/.node-gyp
 
 EXPOSE 3000
-CMD ["npm", "start"]
+# 使用Node直接运行服务器，而不是通过npm
+CMD ["node", "server.js"]
