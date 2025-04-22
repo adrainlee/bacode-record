@@ -4,8 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile.backend
     container_name: backend
-    # 使用宿主机的用户ID和组ID运行容器，解决权限问题
-    user: "${UID:-1000}:${GID:-1000}"
+    # 移除用户映射，使用root用户运行容器
+    # user: "${UID:-1000}:${GID:-1000}"
     ports:
       - "8000:8000"
     environment:
@@ -22,13 +22,13 @@ services:
     # 直接使用command设置权限并启动应用，不依赖entrypoint.sh
     command: >
       sh -c "
-        echo 'Setting correct permissions for data directory...' &&
+        echo 'Setting up environment...' &&
+        mkdir -p /app/data /app/logs &&
         chmod -R 777 /app/data &&
         chmod -R 777 /app/logs &&
-        if [ -f /app/data/barcode_scanner.db ]; then
-          echo 'Setting permissions for database file...' &&
-          chmod 777 /app/data/barcode_scanner.db;
-        fi &&
+        # 初始化数据库文件（如果不存在）
+        touch /app/data/barcode_scanner.db &&
+        chmod 777 /app/data/barcode_scanner.db &&
         echo 'Starting application...' &&
         gunicorn -c gunicorn_conf.py app.main:app
       "
