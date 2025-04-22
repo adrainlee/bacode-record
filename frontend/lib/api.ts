@@ -14,7 +14,12 @@ import {
  * @returns - 请求响应
  */
 // 从环境变量中获取API基础URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'; // 默认值
+// 根据环境选择正确的URL
+// 在服务器端（Docker容器内），使用服务名称
+// 在客户端（浏览器），使用localhost或域名
+const API_BASE_URL = typeof window === 'undefined'
+    ? process.env.NEXT_PUBLIC_API_URL || 'http://backend:8000' // 服务器端
+    : (process.env.NEXT_PUBLIC_API_URL?.replace('http://backend:', 'http://localhost:') || 'http://localhost:8000'); // 客户端
 
 export async function fetchAPI<T>(url: string, options: RequestInit = {}): Promise<T> {
     const defaultOptions: RequestInit = {

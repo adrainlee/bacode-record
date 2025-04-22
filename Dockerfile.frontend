@@ -1,9 +1,38 @@
-FROM node:18-alpine
+# 构建阶段
+FROM node:18-alpine AS builder
 WORKDIR /app
+
+# 复制 package.json 和 package-lock.json
 COPY frontend/package*.json ./
-RUN npm install
-RUN npm install node-fetch
+
+# 安装依赖
+RUN npm ci
+
+# 复制源代码
 COPY frontend/ ./
+
+# 设置环境变量并构建
+# 在Docker网络中，服务可以通过服务名称相互访问
+ENV NEXT_PUBLIC_API_URL=http://backend:8000
 RUN npm run build
+
+# 生产阶段
+FROM node:18-alpine AS runner
+WORKDIR /app
+
+# 设置环境变量
+ENV NODE_ENV production
+
+# 复制必要文件
+COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/package-lock.json ./package-lock.json
+
+# 只安装生产依赖
+RUN npm ci --omit=dev && \
+    npm cache clean --force
+
 EXPOSE 3000
 CMD ["npm", "start"]
