@@ -139,7 +139,29 @@
    cd bacode-record  # 进入项目根目录
    ```
 
-2. **构建并启动容器**:
+2. **配置环境变量**:
+   ```bash
+   # 复制后端环境变量示例文件并进行配置
+   cp backend/.env.prod.example backend/.env.prod
+   # 编辑 backend/.env.prod 文件，设置必要的环境变量
+   ```
+   这一步非常重要，因为后端服务需要这些环境变量来正确运行。
+
+3. **设置用户权限** (解决数据库权限问题):
+   ```bash
+   # 导出当前用户的UID和GID环境变量
+   export UID=$(id -u)
+   export GID=$(id -g)
+   ```
+   这将确保Docker容器使用与宿主机相同的用户ID和组ID运行，从而避免权限问题。
+   
+   或者，您也可以创建一个`.env`文件在项目根目录：
+   ```bash
+   echo "UID=$(id -u)" > .env
+   echo "GID=$(id -g)" >> .env
+   ```
+
+4. **构建并启动容器**:
    在项目根目录下（包含 `docker-compose.yml` 文件），运行以下命令：
    ```bash
    docker-compose up --build -d
@@ -148,7 +170,7 @@
    - `-d` 选项会在后台（分离模式）运行容器。
    - 此命令会自动构建前端和后端的 Docker 镜像，并启动相应的服务容器。
 
-3. **访问应用**:
+5. **访问应用**:
    - **前端应用**: 打开浏览器访问 `http://localhost:3000`
    - **后端API文档 (Swagger UI)**: 访问 `http://localhost:8000/docs`
    - **后端API文档 (ReDoc)**: 访问 `http://localhost:8000/redoc`

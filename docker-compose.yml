@@ -4,14 +4,21 @@ services:
       context: .
       dockerfile: Dockerfile.backend
     container_name: backend
+    # 使用宿主机的用户ID和组ID运行容器，解决权限问题
+    user: "${UID:-1000}:${GID:-1000}"
     ports:
       - "8000:8000"
     environment:
       - ENV=production
+      - DATABASE_PATH=/app/data/barcode_scanner.db
     volumes:
       # 将宿主机的 ./backend/data 目录挂载到容器的 /app/data
       # 这样 SQLite 数据库文件就能持久化保存
       - ./backend/data:/app/data
+      # 挂载日志目录
+      - ./backend/logs:/app/logs
+    # 确保容器在重启时也能正确运行
+    restart: unless-stopped
 
   frontend:
     build:
